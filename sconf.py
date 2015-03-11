@@ -200,20 +200,37 @@ def Process(info):
 			
 			if not 'Trunk' in vlan:	
 				print "The final configuration that is about to be pushed looks like:\n############################"
-				config = "configure terminal\n\ninterface e"+fex+"/1/"+port+"\n\ndescription "+desc+"\nswitchport mode access\nswitchport access vlan "+vlan+"\nspanning-tree port type edge\nno switchport trunk allowed vlan\nno shutdown\n"
-				print config + "############################"
-				if not force:	
+				config = '''configure terminal
+
+interface e%s/1/%s
+  description %s
+  switchport mode access
+  switchport access vlan %s
+  spanning-tree port type edge
+  no switchport trunk allowed vlan
+  no shutdown\n''' % (fex,port,desc,vlan)
+                		print config + "############################"
+				if not force:   
 					if Quest_bool():
 						SConf(config,push=True)
 						print (SConf("show run int e"+fex+"/1/"+port,push=False) if SConf("show run int e"+fex+"/1/"+port,push=False) else "None")
 				if force:
 					SConf(config,push=True)
 					print SConf("show run int e"+fex+"/1/"+port,push=False)
-			
+            
 			if ('Trunk' in vlan):
 				vlan = vlan[5:]
 				print "The final configuration that is about to be pushed looks like:\n############################"
-				config = "configure terminal\n\ninterface e"+fex+"/1/"+port+"\n\ndescription "+desc+"\nswitchport mode trunk\nno switchport access vlan\nswitchport trunk allowed vlan "+vlan+"\nspanning-tree port type edge trunk\nno shutdown\n"
+
+				config = '''configure terminal
+
+interface e%s/1/%s
+  description %s
+  switchport mode trunk
+  no switchport access vlan
+  switchport trunk allowed vlan %s
+  spanning-tree port type edge trunk
+  no shutdown\n''' % (fex,port,desc,vlan)
 				print config + "############################"
 				if not force:	
 					if Quest_bool():
